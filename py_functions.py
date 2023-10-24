@@ -1,7 +1,5 @@
-import datetime
-import os
-import random
-import sqlite3
+from datetime import *
+import os, random, re, sqlite3
 
 db = sqlite3.connect('database.db')
 
@@ -65,7 +63,7 @@ def emitir_recibo():
         'itens': []
     }
 
-    data_hoje = datetime.datetime.now().strftime('%d/%m/%Y')
+    data_hoje = datetime.now().strftime('%d/%m/%Y')
 
     fornecedor_id = input('ID do fornecedor: ')
     data = input(f'Data do Recibo (em branco para {data_hoje}): ') or data_hoje
@@ -168,9 +166,12 @@ def gerar_html_recibo(numero_recibo=None):
     dados_itens_recibo = run_query(query_itens_recibo, (numero_recibo,))
 
     if dados_recibo and dados_itens_recibo:
-        file_name = f'recibo_{numero_recibo}.html'
-        directory_path = os.getcwd()    
-        # directory_path = os.path.join(os.path.dirname(__file__), 'recibos')
+        date_string = dados_recibo[0][1]
+        date_obj = datetime.strptime(date_string, '%d/%m/%Y')  # Converte a string em um objeto 'datetime'
+        numbers_from_dados_recibo = ''.join(re.findall(r'\d+', dados_recibo[0][4])) # Mantem somente os numeros no CNPJ
+
+        file_name = f"recibo_{date_obj.strftime('%Y%m%d')}_{numbers_from_dados_recibo}_{numero_recibo}.html"
+        directory_path = os.getcwd()+'\\recibos'
         output_path = os.path.join(directory_path, file_name)
 
         try:
