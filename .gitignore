@@ -162,4 +162,4 @@ cython_debug/
 # Specifics from project
 database.db
 recibos/
-recibos*.html
+recibo_*.html
